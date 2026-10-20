@@ -1,5 +1,6 @@
 package com.b919.cave_dweller_legacy.util;
 
+import com.b919.cave_dweller_legacy.CDLMain;
 import com.b919.cave_dweller_legacy.common.ModNetwork;
 import com.b919.cave_dweller_legacy.common.config.ModConfig;
 import com.b919.cave_dweller_legacy.entity.CaveDwellerEntity;
@@ -11,12 +12,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 public class SpawnDirector {
+    private static final Logger LOGGER = LogManager.getLogger(CDLMain.MODID);
     private static final Map<Integer, DimensionState> states = new HashMap<Integer, DimensionState>();
 
     public static class DimensionState {
@@ -48,6 +52,9 @@ public class SpawnDirector {
         if (state == null) {
             state = new DimensionState();
             states.put(dim, state);
+            if (ModConfig.general.debugMode) {
+                LOGGER.info("[DEBUG] Created spawn state for dimension {}", dim);
+            }
         }
 
         if (ModConfig.general.fastForward) {
@@ -58,6 +65,9 @@ public class SpawnDirector {
         if (state.cooldownTimer > 0) {
             state.cooldownTimer--;
             if (state.cooldownTimer <= 0) {
+                if (ModConfig.general.debugMode) {
+                    LOGGER.info("[DEBUG] Cooldown ended for dimension {}", dim);
+                }
                 state.reset();
             }
             return;
@@ -104,6 +114,9 @@ public class SpawnDirector {
 
         if (nearest != null && state.aliveCount == 0) {
             if (state.noiseTimer <= 0) {
+                if (ModConfig.general.debugMode) {
+                    LOGGER.info("[DEBUG] Playing cave noise for dimension {}", dim);
+                }
                 playCaveNoise(world, nearest);
                 Random rand = new Random();
                 state.noiseTimer = (ModConfig.timers.resetNoiseMin + rand.nextInt(Math.max(1, ModConfig.timers.resetNoiseMax - ModConfig.timers.resetNoiseMin + 1))) * 20;
@@ -116,8 +129,14 @@ public class SpawnDirector {
 
         if (state.spawnTimer <= 0 && state.aliveCount < ModConfig.spawn.maxSpawned && nearest != null) {
             Random rand = new Random();
+            if (ModConfig.general.debugMode) {
+                LOGGER.info("[DEBUG] Spawn timer expired, attempting spawn (chance {}/{}, alive={})", rand.nextFloat(), ModConfig.spawn.spawnChancePerTick, state.aliveCount);
+            }
             if (rand.nextFloat() < ModConfig.spawn.spawnChancePerTick) {
                 if (trySpawn(world, nearest)) {
+                    if (ModConfig.general.debugMode) {
+                        LOGGER.info("[DEBUG] Spawn succeeded in dimension {}", dim);
+                    }
                     if (rand.nextDouble() < ModConfig.timers.cooldownChance) {
                         state.cooldownTimer = ModConfig.timers.cooldownAfterSpawn * 20;
                         state.hasSpawnedInCooldown = true;
@@ -125,9 +144,15 @@ public class SpawnDirector {
                         state.reset();
                     }
                 } else {
+                    if (ModConfig.general.debugMode) {
+                        LOGGER.info("[DEBUG] Spawn failed (no valid location)");
+                    }
                     state.spawnTimer = 20;
                 }
             } else {
+                if (ModConfig.general.debugMode) {
+                    LOGGER.info("[DEBUG] Spawn chance failed");
+                }
                 state.spawnTimer = 20;
             }
         }
@@ -135,9 +160,14 @@ public class SpawnDirector {
 
     private static void playCaveNoise(World world, EntityPlayer player) {
         if (ModConfig.sound.playAtPlayerPosition && ModNetwork.INSTANCE != null) {
+            float volume = (float) ModConfig.sound.caveNoiseVolume;
+            float pitch = (float) ModConfig.sound.caveNoisePitch;
             CaveSoundPacket packet = new CaveSoundPacket("cavenoise", player.posX, player.posY, player.posZ,
-                    (float) ModConfig.sound.caveNoiseVolume, (float) ModConfig.sound.caveNoisePitch);
+                    volume, pitch);
             ModNetwork.INSTANCE.sendToAllAround(packet, new NetworkRegistry.TargetPoint(player.dimension, player.posX, player.posY, player.posZ, 64));
+            if (ModConfig.general.debugMode) {
+                LOGGER.info("[DEBUG] Sent cave noise packet to player {} at ({},{},{}) vol={} pitch={}", player.getName(), player.posX, player.posY, player.posZ, volume, pitch);
+            }
         }
     }
 

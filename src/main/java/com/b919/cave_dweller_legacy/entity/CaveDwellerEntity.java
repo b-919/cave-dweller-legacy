@@ -91,18 +91,30 @@ public class CaveDwellerEntity extends EntityCreature {
         if (this.isInvisible() && getAttackTarget() != null && this.ticksExisted > 20) {
             this.setInvisible(false);
             playSpottedSound();
+            if (ModConfig.general.debugMode) {
+                System.out.println("[CAVE_DWELLER_DEBUG] CaveDweller revealed to target");
+            }
         }
         int leaveTicks = ModConfig.timers.timeUntilLeave * 20;
         if (lifeTicks > leaveTicks) {
+            if (ModConfig.general.debugMode) {
+                System.out.println("[CAVE_DWELLER_DEBUG] CaveDweller leaving due to time limit");
+            }
             disappear();
         }
         if (chaseTicks > ModConfig.behavior.chaseTimeUntilLeave * 20 && currentRoll == Roll.CHASE) {
+            if (ModConfig.general.debugMode) {
+                System.out.println("[CAVE_DWELLER_DEBUG] CaveDweller leaving during chase");
+            }
             currentRoll = Roll.FLEE;
         }
     }
 
     public void disappear() {
         playDisappearSound();
+        if (ModConfig.general.debugMode) {
+            System.out.println("[CAVE_DWELLER_DEBUG] CaveDweller disappearing");
+        }
         setDead();
     }
 
