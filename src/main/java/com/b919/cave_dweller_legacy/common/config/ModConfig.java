@@ -19,6 +19,9 @@ public class ModConfig {
     @Config.Name("Behavior")
     public static Behavior behavior = new Behavior();
 
+    @Config.Name("Grief Mode")
+    public static Grief grief = new Grief();
+
     @Config.Name("Sound")
     public static Sound sound = new Sound();
 
@@ -55,9 +58,9 @@ public class ModConfig {
         @Config.RangeInt(min = 4, max = 32)
         public int minSpawnDistanceFromPlayer = 16;
 
-        @Config.Name("Check Path To Spawn")
-        @Config.Comment("Check if there is a path from spawn location to player")
-        public boolean checkPathToSpawn = true;
+        //@Config.Name("Check Path To Spawn")
+        //@Config.Comment("Check if there is a path from spawn location to player")
+        //public boolean checkPathToSpawn = true;
 
         @Config.Name("Dimension Whitelist")
         @Config.Comment("Dimensions where Cave Dweller can spawn (e.g., 0 for Overworld)")
@@ -68,27 +71,27 @@ public class ModConfig {
         @Config.RangeInt(min = 0, max = 15)
         public int skyLightLevel = 8;
 
-        @Config.Name("Block Light Level")
+        /*@Config.Name("Block Light Level")
         @Config.Comment("Maximum block light level for spawning (0-15)")
         @Config.RangeInt(min = 0, max = 15)
-        public int blockLightLevel = 0;
+        public int blockLightLevel = 0;*/
     }
 
     public static class Timers {
         @Config.Name("Time Until Spawn Min (Seconds)")
         @Config.Comment("Minimum time until next spawn attempt")
         @Config.RangeInt(min = 60, max = 3600)
-        public int timeUntilSpawnMin = 300;
+        public int timeUntilSpawnMin = 60;
 
         @Config.Name("Time Until Spawn Max (Seconds)")
         @Config.Comment("Maximum time until next spawn attempt")
         @Config.RangeInt(min = 60, max = 3600)
-        public int timeUntilSpawnMax = 600;
+        public int timeUntilSpawnMax = 120;
 
         @Config.Name("Cooldown After Spawn (Seconds)")
         @Config.Comment("Cooldown time after spawn")
         @Config.RangeInt(min = 60, max = 7200)
-        public int cooldownAfterSpawn = 1200;
+        public int cooldownAfterSpawn = 180;
 
         @Config.Name("Cooldown Chance")
         @Config.Comment("Chance for cooldown timer to activate (0.0 - 1.0)")
@@ -100,20 +103,15 @@ public class ModConfig {
         @Config.RangeInt(min = 30, max = 1800)
         public int timeUntilLeave = 300;
 
-        @Config.Name("Time Until Leave During Chase (Seconds)")
-        @Config.Comment("Time until Cave Dweller leaves during chase")
-        @Config.RangeInt(min = 5, max = 300)
-        public int timeUntilLeaveChase = 30;
-
         @Config.Name("Reset Noise Min (Seconds)")
         @Config.Comment("Minimum time between cave noise sounds")
         @Config.RangeInt(min = 30, max = 600)
-        public int resetNoiseMin = 240;
+        public int resetNoiseMin = 60;
 
         @Config.Name("Reset Noise Max (Seconds)")
         @Config.Comment("Maximum time between cave noise sounds")
         @Config.RangeInt(min = 30, max = 600)
-        public int resetNoiseMax = 360;
+        public int resetNoiseMax = 120;
     }
 
     public static class Behavior {
@@ -126,10 +124,6 @@ public class ModConfig {
         @Config.Comment("Maximum amount of times it needs to be looked at to stop staring")
         @Config.RangeInt(min = 1, max = 30)
         public int stareTimeMax = 13;
-
-        @Config.Name("Can Break Doors")
-        @Config.Comment("Allow Cave Dweller to break doors")
-        public boolean canBreakDoors = true;
 
         @Config.Name("Can Climb")
         @Config.Comment("Allow Cave Dweller to climb walls")
@@ -152,32 +146,89 @@ public class ModConfig {
         @Config.Name("Movement Speed")
         @Config.Comment("Movement speed of Cave Dweller")
         @Config.RangeDouble(min = 0.1D, max = 1.0D)
-        public double movementSpeed = 0.3D;
+        public double movementSpeed = 0.5D;
 
         @Config.Name("Chase Speed")
-        @Config.Comment("Movement speed during chase")
+        @Config.Comment("Movement speed multiplier during chase")
         @Config.RangeDouble(min = 0.1D, max = 1.5D)
-        public double chaseSpeed = 0.5D;
+        public double chaseSpeed = 0.85D;
+
+        @Config.Name("Attack Reach")
+        @Config.Comment("Attack reach distance in blocks")
+        @Config.RangeDouble(min = 1.0D, max = 6.0D)
+        public double attackReach = 2.15D;
 
         @Config.Name("Flee Speed")
-        @Config.Comment("Movement speed during flee")
+        @Config.Comment("Movement speed multiplier during flee")
         @Config.RangeDouble(min = 0.1D, max = 1.5D)
-        public double fleeSpeed = 0.4D;
+        public double fleeSpeed = 1.0D;
+
+        @Config.Name("Stroll Speed")
+        @Config.Comment("Movement speed multiplier while strolling")
+        @Config.RangeDouble(min = 0.1D, max = 1.5D)
+        public double strollSpeed = 0.7D;
 
         @Config.Name("Follow Range")
         @Config.Comment("Follow range of Cave Dweller")
         @Config.RangeDouble(min = 16.0D, max = 256.0D)
         public double followRange = 100.0D;
 
-        @Config.Name("Spotting Range")
+        /*@Config.Name("Spotting Range")
         @Config.Comment("Range at which Cave Dweller can spot players")
         @Config.RangeInt(min = 8, max = 128)
-        public int spottingRange = 64;
+        public int spottingRange = 100;*/
 
         @Config.Name("Chase Time Until Leave")
         @Config.Comment("Time until Cave Dweller leaves during chase if player stops looking")
         @Config.RangeInt(min = 10, max = 120)
         public int chaseTimeUntilLeave = 30;
+    }
+
+    public static class Grief {
+        @Config.Name("Enabled")
+        @Config.Comment("Allow the Cave Dweller to break blocks when it cannot reach a player")
+        public boolean enabled = false;
+
+        @Config.Name("Maximum Block Hardness")
+        @Config.Comment("Maximum hardness the Cave Dweller can break unless a block is whitelisted")
+        @Config.RangeDouble(min = 0.0D, max = 100.0D)
+        public double maxBlockHardness = 2.0D;
+
+        @Config.Name("Block Blacklist")
+        @Config.Comment("Registry names that can never be broken, for example minecraft:bedrock; blacklist takes priority")
+        public String[] blockBlacklist = new String[0];
+
+        @Config.Name("Block Whitelist")
+        @Config.Comment("Registry names that may be broken regardless of the maximum hardness")
+        public String[] blockWhitelist = new String[0];
+
+        @Config.Name("Block Break Speed")
+        @Config.Comment("Break speed multiplier; higher values break blocks faster")
+        @Config.RangeDouble(min = 0.1D, max = 10.0D)
+        public double blockBreakSpeed = 1.0D;
+
+        @Config.Name("Drop Broken Blocks")
+        @Config.Comment("Drop block items when the Cave Dweller breaks a block")
+        public boolean dropBrokenBlocks = true;
+
+        @Config.Name("Unreachable Delay (Ticks)")
+        @Config.Comment("How long a chase target must remain unreachable before the Cave Dweller starts breaking blocks")
+        @Config.RangeInt(min = 0, max = 1200)
+        public int unreachableDelayTicks = 40;
+
+        @Config.Name("Tunnel Carver Mode")
+        @Config.Comment("Let the Cave Dweller move toward nearby players and carve obstructing blocks outside chase mode")
+        public boolean tunnelCarverMode = false;
+
+        @Config.Name("Tunnel Range")
+        @Config.Comment("Maximum distance to a player for tunnel-carver behavior")
+        @Config.RangeInt(min = 8, max = 128)
+        public int tunnelRange = 32;
+
+        @Config.Name("Tunnel Stop Distance")
+        @Config.Comment("Stop tunnel-carver behavior this close to the player")
+        @Config.RangeInt(min = 1, max = 16)
+        public int tunnelStopDistance = 4;
     }
 
     public static class Sound {
@@ -194,10 +245,6 @@ public class ModConfig {
         @Config.Name("Play Sounds At Player Position")
         @Config.Comment("Play ambient cave noises at player's position")
         public boolean playAtPlayerPosition = true;
-
-        @Config.Name("Intensity Increases With Closer")
-        @Config.Comment("Cave noise intensity increases as Cave Dweller gets closer")
-        public boolean intensityIncreasesWithCloser = true;
     }
 
     public static class General {

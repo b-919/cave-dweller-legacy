@@ -7,6 +7,7 @@ import com.b919.cave_dweller_legacy.entity.CaveDwellerEntity;
 import com.b919.cave_dweller_legacy.network.CaveSoundPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
@@ -87,7 +88,6 @@ public class SpawnDirector {
         }
 
         EntityPlayer nearest = null;
-        double nearestDist = Double.MAX_VALUE;
         for (EntityPlayer player : world.playerEntities) {
             if (player == null || !player.isEntityAlive() || player.isCreative() || player.isSpectator()) {
                 continue;
@@ -102,14 +102,8 @@ public class SpawnDirector {
             if (!dimOk) {
                 continue;
             }
-            double dist = 0;
-            CaveDwellerEntity dummy = new CaveDwellerEntity(world);
-            dist = dummy.getDistance(player);
-            dummy.setDead();
-            if (dist < nearestDist && dist <= ModConfig.spawn.spawnDistance) {
-                nearest = player;
-                nearestDist = dist;
-            }
+            nearest = player;
+            break;
         }
 
         if (nearest != null && state.aliveCount == 0) {
@@ -129,10 +123,11 @@ public class SpawnDirector {
 
         if (state.spawnTimer <= 0 && state.aliveCount < ModConfig.spawn.maxSpawned && nearest != null) {
             Random rand = new Random();
+            float spawnChance = ModConfig.general.fastForward ? 1.0f : ModConfig.spawn.spawnChancePerTick;
             if (ModConfig.general.debugMode) {
-                LOGGER.info("[DEBUG] Spawn timer expired, attempting spawn (chance {}/{}, alive={})", rand.nextFloat(), ModConfig.spawn.spawnChancePerTick, state.aliveCount);
+                LOGGER.info("[DEBUG] Spawn timer expired, attempting spawn (chance {}/{}, alive={}, fastForward={})", spawnChance, ModConfig.spawn.spawnChancePerTick, state.aliveCount, ModConfig.general.fastForward);
             }
-            if (rand.nextFloat() < ModConfig.spawn.spawnChancePerTick) {
+            if (rand.nextFloat() < spawnChance) {
                 if (trySpawn(world, nearest)) {
                     if (ModConfig.general.debugMode) {
                         LOGGER.info("[DEBUG] Spawn succeeded in dimension {}", dim);
@@ -173,41 +168,63 @@ public class SpawnDirector {
 
     private static boolean trySpawn(World world, EntityPlayer player) {
         Random rand = new Random();
-        for (int attempt = 0; attempt < 40; attempt++) {
+        int attempts = 0;
+        int failedNoValidY = 0;
+        int maxAttempts = ModConfig.general.fastForward ? 200 : 40;
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+            attempts++;
             double angle = rand.nextDouble() * Math.PI * 2;
             double dist = ModConfig.spawn.minSpawnDistanceFromPlayer + rand.nextDouble() * (ModConfig.spawn.spawnDistance - ModConfig.spawn.minSpawnDistanceFromPlayer);
             double x = player.posX + Math.cos(angle) * dist;
             double z = player.posZ + Math.sin(angle) * dist;
-            double y = player.posY + (rand.nextInt(13) - 6);
-            BlockPos pos = new BlockPos(x, y, z);
-            if (!world.isBlockLoaded(pos)) {
-                continue;
-            }
-            if (pos.getY() >= ModConfig.spawn.spawnHeightLimit && !ModConfig.spawn.allowSurfaceSpawn) {
-                continue;
-            }
-            if (!world.canSeeSky(pos) && !ModConfig.spawn.allowSurfaceSpawn) {
-                int skyLight = world.getLightFor(EnumSkyBlock.SKY, pos);
-                if (skyLight > ModConfig.spawn.skyLightLevel) {
+            BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos((int) x, 0, (int) z);
+            boolean foundValidY = false;
+            int playerY = (int) player.posY;
+            for (int y = playerY + 6; y > 0; y--) {
+                pos.setY(y);
+                if (!world.isBlockLoaded(pos)) {
                     continue;
                 }
+                if (pos.getY() >= ModConfig.spawn.spawnHeightLimit && !ModConfig.spawn.allowSurfaceSpawn) {
+                    continue;
+                }
+                if (!world.canSeeSky(pos) && !ModConfig.spawn.allowSurfaceSpawn) {
+                    int skyLight = world.getLightFor(EnumSkyBlock.SKY, pos);
+                    if (skyLight > ModConfig.spawn.skyLightLevel) {
+                        continue;
+                    }
+                }
+                if (!world.getBlockState(pos.down()).isSideSolid(world, pos.down(), EnumFacing.UP)) {
+                    continue;
+                }
+                if (!world.isAirBlock(pos) || !world.isAirBlock(pos.up())) {
+                    continue;
+                }
+                AxisAlignedBB box = new AxisAlignedBB(pos, pos.add(1, 2, 1));
+                if (!world.checkNoEntityCollision(box)) {
+                    continue;
+                }
+                foundValidY = true;
+                break;
             }
-            if (!world.getBlockState(pos.down()).isSideSolid(world, pos.down(), net.minecraft.util.EnumFacing.UP)) {
+            
+            if (!foundValidY) {
+                failedNoValidY++;
                 continue;
             }
-            if (!world.isAirBlock(pos) || !world.isAirBlock(pos.up())) {
-                continue;
-            }
-            AxisAlignedBB box = new AxisAlignedBB(pos, pos.add(1, 2, 1));
-            if (!world.checkNoEntityCollision(box)) {
-                continue;
-            }
+            
             CaveDwellerEntity entity = new CaveDwellerEntity(world);
             entity.setPosition(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
             entity.setAttackTarget(player);
             entity.setInvisible(true);
-            world.spawnEntity(entity);
-            return true;
+            boolean spawned = world.spawnEntity(entity);
+            if (ModConfig.general.debugMode) {
+                System.out.println("[CAVE_DWELLER_DEBUG] Spawn " + (spawned ? "SUCCESS" : "FAILED") + " at " + pos + " (invisible=" + entity.isInvisible() + ") after " + attempts + " attempts (noValidY=" + failedNoValidY + ")");
+            }
+            return spawned;
+        }
+        if (ModConfig.general.debugMode) {
+            System.out.println("[CAVE_DWELLER_DEBUG] Spawn FAILED after " + attempts + " attempts (noValidY=" + failedNoValidY + ")");
         }
         return false;
     }

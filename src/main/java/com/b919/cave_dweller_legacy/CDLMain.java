@@ -1,27 +1,20 @@
 package com.b919.cave_dweller_legacy;
 
 import com.b919.cave_dweller_legacy.common.CommonProxy;
-import com.b919.cave_dweller_legacy.common.ModEntities;
-import com.b919.cave_dweller_legacy.common.ModSounds;
-import com.b919.cave_dweller_legacy.common.config.ModConfig;
-import com.b919.cave_dweller_legacy.event.WorldEvents;
-import com.b919.cave_dweller_legacy.common.ModNetwork;
-import net.minecraftforge.common.MinecraftForge;
+import software.bernie.geckolib3.GeckoLib;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import org.apache.logging.log4j.Logger;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
-@Mod(modid = CDLMain.MODID, name = CDLMain.NAME, version = CDLMain.VERSION)
+@Mod(modid = CDLMain.MODID, name = CDLMain.NAME, version = CDLMain.VERSION, dependencies = "required-after:geckolib3")
 public class CDLMain {
     public static final String MODID = "cave_dweller_legacy";
     public static final String NAME = "Cave Dweller Legacy";
     public static final String VERSION = "1.0";
-
-    private static Logger logger;
 
     @Instance(MODID)
     public static CDLMain instance;
@@ -31,12 +24,17 @@ public class CDLMain {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        logger = event.getModLog();
+        GeckoLib.initialize();
         proxy.preInit(event);
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
         proxy.init(event);
+    }
+
+    @EventHandler
+    public void serverStart(FMLServerStartingEvent event) {
+        event.registerServerCommand(new com.b919.cave_dweller_legacy.common.command.CommandCaveDweller());
     }
 }

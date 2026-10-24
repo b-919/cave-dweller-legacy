@@ -1,5 +1,6 @@
 package com.b919.cave_dweller_legacy.entity.ai;
 
+import com.b919.cave_dweller_legacy.common.config.ModConfig;
 import com.b919.cave_dweller_legacy.entity.CaveDwellerEntity;
 import com.b919.cave_dweller_legacy.entity.Roll;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -23,13 +24,15 @@ public class EntityAICaveDwellerStroll extends EntityAIBase {
         if (entity.isInvisible()) {
             return false;
         }
-        if (entity.currentRoll != Roll.STROLL && entity.getAttackTarget() == null) {
-            entity.reRoll();
-        }
-        if (entity.currentRoll != Roll.STROLL) {
+        if (entity.currentRoll != Roll.STROLL && entity.getAttackTarget() != null) {
             return false;
         }
-        if (entity.pleaseStopMoving) {
+        if (entity.currentRoll != Roll.STROLL && entity.getAttackTarget() == null) {
+            if (entity.getRNG().nextInt(20) == 0) {
+                entity.reRoll();
+            }
+        }
+        if (entity.currentRoll != Roll.STROLL) {
             return false;
         }
         Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.entity, 10, 7);
@@ -52,7 +55,7 @@ public class EntityAICaveDwellerStroll extends EntityAIBase {
 
     @Override
     public void startExecuting() {
-        this.entity.getNavigator().tryMoveToXYZ(this.x, this.y, this.z, 0.3D);
+        this.entity.getNavigator().tryMoveToXYZ(this.x, this.y, this.z, ModConfig.behavior.strollSpeed);
     }
 
     @Override

@@ -13,6 +13,10 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
+repositories {
+    maven { url = 'https://www.cursemaven.com' }
+}
+
 version = '1.0'
 group = 'com.b919.cave-dweller-legacy' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'cave-dweller-legacy'
@@ -60,6 +64,7 @@ dependencies {
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2864'
+    implementation fg.deobf('curse.maven:geckolib-388172:4020277')
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"

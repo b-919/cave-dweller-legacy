@@ -1,33 +1,27 @@
 package com.b919.cave_dweller_legacy.client.render;
 
-import com.b919.cave_dweller_legacy.CDLMain;
+import com.b919.cave_dweller_legacy.client.render.model.ModelCaveDwellerGeo;
 import com.b919.cave_dweller_legacy.entity.CaveDwellerEntity;
-import net.minecraft.client.model.ModelZombie;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.util.ResourceLocation;
+import software.bernie.geckolib3.core.util.Color;
+import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
-import javax.annotation.Nonnull;
-
-public class RenderCaveDweller extends RenderLiving<CaveDwellerEntity> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(CDLMain.MODID, "textures/entity/cave_dweller.png");
-    private static final ResourceLocation TEXTURE_GLOW = new ResourceLocation(CDLMain.MODID, "textures/entity/cave_dweller_eyes.png");
-
+public class RenderCaveDweller extends GeoEntityRenderer<CaveDwellerEntity> {
     public RenderCaveDweller(RenderManager manager) {
-        super(manager, new ModelZombie(), 0.5F);
-        this.addLayer(new LayerCaveDwellerEyes(this));
+        super(manager, new ModelCaveDwellerGeo());
+        this.shadowSize = 0.5F;
     }
 
     @Override
-    protected ResourceLocation getEntityTexture(@Nonnull CaveDwellerEntity entity) {
-        return TEXTURE;
+    public void renderEarly(CaveDwellerEntity entity, float limbSwing, float limbSwingAmount, float partialTicks,
+                            float ageInTicks, float netHeadYaw) {
+        float verticalScale = entity.isCrawling() ? 0.2F : entity.isCrouching() ? 0.49F : 0.73F;
+        GlStateManager.scale(0.72F, verticalScale, 0.72F);
     }
 
     @Override
-    protected void preRenderCallback(CaveDwellerEntity entitylivingbaseIn, float partialTickTime) {
-        if (entitylivingbaseIn.isInvisible()) {
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 0.0F);
-        }
+    public Color getRenderColor(CaveDwellerEntity entity, float partialTicks) {
+        return entity.isInvisible() ? Color.ofRGBA(255, 255, 255, 0) : Color.WHITE;
     }
 }

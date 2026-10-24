@@ -11,6 +11,6 @@
   "credits": "Inspired by Gargin's Cave Dweller and SiverDX's Cave Dweller Evolved",
   "logoFile": "",
   "screenshots": [],
-  "dependencies": []
+  "dependencies": ["required-after:geckolib3"]
 }
 ]

@@ -43,7 +43,7 @@ public class EntityAICaveDwellerFlee extends EntityAIBase {
     public void startExecuting() {
         super.startExecuting();
         shouldLeave = false;
-        ticksUntilLeave = 300;
+        ticksUntilLeave = 600;
         assert entity.getAttackTarget() != null;
         Vec3d fleePos = RandomPositionGenerator.findRandomTargetBlockAwayFrom(entity, 32, 7, entity.getAttackTarget().getPositionVector());
         if (fleePos != null) {
