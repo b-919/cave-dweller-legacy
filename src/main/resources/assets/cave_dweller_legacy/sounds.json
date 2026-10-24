@@ -1,8 +1,26 @@
 {
-  "cavenoise": {
+  "cavenoise_1": {
     "category": "ambient",
     "sounds": [
-      "cave_dweller_legacy:cavenoise"
+      "cave_dweller_legacy:cavenoise_1"
+    ]
+  },
+  "cavenoise_2": {
+    "category": "ambient",
+    "sounds": [
+      "cave_dweller_legacy:cavenoise_2"
+    ]
+  },
+  "cavenoise_3": {
+    "category": "ambient",
+    "sounds": [
+      "cave_dweller_legacy:cavenoise_3"
+    ]
+  },
+  "cavenoise_4": {
+    "category": "ambient",
+    "sounds": [
+      "cave_dweller_legacy:cavenoise_4"
     ]
   },
   "chase_1": {
