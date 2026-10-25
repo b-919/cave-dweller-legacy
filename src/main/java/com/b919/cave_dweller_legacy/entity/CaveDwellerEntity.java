@@ -26,6 +26,8 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.item.EntityBoat;
+import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
@@ -57,9 +59,11 @@ public class CaveDwellerEntity extends EntityCreature implements IAnimatable {
     private static final float CRAWL_HEIGHT = 0.5F;
 
     public Roll currentRoll = Roll.STROLL;
+    private Roll lastRollForSound;
     private final AnimationFactory animationFactory = new AnimationFactory(this);
     private DwellerNodeType appliedPosture;
     private int attackAnimationTicks;
+    private int proximityChaseCooldown;
     public int lifeTicks = 0;
     public int chaseTicks = 0;
 
@@ -173,6 +177,23 @@ public class CaveDwellerEntity extends EntityCreature implements IAnimatable {
     }
 
     @Override
+    protected boolean canBeRidden(@Nonnull Entity entityIn) {
+        return !isCapturingVehicle(entityIn) && super.canBeRidden(entityIn);
+    }
+
+    @Override
+    public boolean startRiding(@Nonnull Entity entityIn, boolean force) {
+        if (isCapturingVehicle(entityIn)) {
+            return false;
+        }
+        return super.startRiding(entityIn, force);
+    }
+
+    private static boolean isCapturingVehicle(Entity entityIn) {
+        return entityIn instanceof EntityBoat || entityIn instanceof EntityMinecart;
+    }
+
+    @Override
     protected void initEntityAI() {
         this.tasks.addTask(0, new EntityAICaveDwellerGrief(this));
         this.tasks.addTask(1, new EntityAICaveDwellerChase(this));
@@ -278,7 +299,12 @@ public class CaveDwellerEntity extends EntityCreature implements IAnimatable {
         if (world.isRemote) {
             return;
         }
-        
+
+        // Safety net for dwellers that were already mounted before vehicle capture was blocked.
+        if (this.isRiding() && isCapturingVehicle(this.getRidingEntity())) {
+            this.dismountRidingEntity();
+        }
+
         updateCrawlState();
 
         if (this.getNavigator() instanceof PathNavigateDweller) {
@@ -286,7 +312,6 @@ public class CaveDwellerEntity extends EntityCreature implements IAnimatable {
         } else {
             setClimbing(false);
         }
-        setSpotted(getAttackTarget() != null && !isInvisible());
         if (attackAnimationTicks > 0 && --attackAnimationTicks == 0) {
             setAttacking(false);
         }
@@ -303,6 +328,13 @@ public class CaveDwellerEntity extends EntityCreature implements IAnimatable {
                 }
             }
         }
+
+        updateProximityChase();
+        if (currentRoll == Roll.CHASE && lastRollForSound != Roll.CHASE) {
+            playChaseSound();
+        }
+        lastRollForSound = currentRoll;
+        setSpotted(getAttackTarget() != null && !isInvisible());
         if (getAttackTarget() != null && this.isInvisible()) {
             this.setInvisible(false);
             playSpottedSound();
@@ -337,6 +369,57 @@ public class CaveDwellerEntity extends EntityCreature implements IAnimatable {
             System.out.println("[CAVE_DWELLER_DEBUG] CaveDweller disappearing");
         }
         setDead();
+    }
+
+    private void updateProximityChase() {
+        double range = ModConfig.behavior.proximityChaseRange;
+        if (range <= 0.0D) {
+            return;
+        }
+        if (this.proximityChaseCooldown > 0) {
+            this.proximityChaseCooldown--;
+            return;
+        }
+        this.proximityChaseCooldown = Math.max(1, ModConfig.behavior.chaseRollIntervalTicks);
+        if (this.currentRoll == Roll.CHASE) {
+            return;
+        }
+
+        EntityPlayer player = findNearestValidPlayer(range);
+        if (player == null) {
+            return;
+        }
+        boolean canReachPlayer = this.canEntityBeSeen(player)
+                || ModConfig.grief.enabled
+                || ModConfig.grief.tunnelCarverMode;
+        if (!canReachPlayer || this.rand.nextDouble() >= ModConfig.behavior.proximityChaseChance) {
+            return;
+        }
+
+        if (ModConfig.general.debugMode) {
+            System.out.println("[CAVE_DWELLER_DEBUG] Proximity chase triggered at "
+                    + this.getDistance(player) + " blocks");
+        }
+        this.setAttackTarget(player);
+        this.setInvisible(false);
+        this.setRoll(Roll.CHASE);
+        this.playSpottedSound();
+    }
+
+    private EntityPlayer findNearestValidPlayer(double range) {
+        EntityPlayer nearest = null;
+        double nearestDistance = range * range;
+        for (EntityPlayer candidate : this.world.playerEntities) {
+            if (!candidate.isEntityAlive() || candidate.isCreative() || candidate.isSpectator()) {
+                continue;
+            }
+            double distance = candidate.getDistanceSq(this);
+            if (distance <= nearestDistance) {
+                nearestDistance = distance;
+                nearest = candidate;
+            }
+        }
+        return nearest;
     }
 
     @Override
@@ -380,28 +463,23 @@ public class CaveDwellerEntity extends EntityCreature implements IAnimatable {
         playSound(ModSounds.SPOTTED, 1.0F, 1.0F);
     }
 
+    public void playChaseSound() {
+        playSound(ModSounds.CHASE, 1.0F, 1.0F);
+    }
+
     public void playDisappearSound() {
         playSound(ModSounds.DISAPPEAR, 1.0F, 1.0F);
     }
 
     public void playFleeSound() {
         if (ticksExisted % 20 == 0) {
-            SoundEvent sound = ModSounds.FLEE_1;
-            int rand = this.rand.nextInt(2);
-            if (rand == 1) sound = ModSounds.FLEE_2;
-            playSound(sound, 1.0F, 1.0F);
+            playSound(ModSounds.FLEE, 1.0F, 1.0F);
         }
     }
 
     @Override
     protected SoundEvent getHurtSound(@Nonnull DamageSource damageSourceIn) {
-        int rand = this.rand.nextInt(4);
-        switch (rand) {
-            case 0: return ModSounds.HURT_1;
-            case 1: return ModSounds.HURT_2;
-            case 2: return ModSounds.HURT_3;
-            default: return ModSounds.HURT_4;
-        }
+        return ModSounds.HURT;
     }
 
     @Override
@@ -411,14 +489,7 @@ public class CaveDwellerEntity extends EntityCreature implements IAnimatable {
 
     @Override
     protected void playStepSound(@Nonnull BlockPos pos, @Nonnull Block blockIn) {
-        int rand = this.rand.nextInt(4);
-        SoundEvent sound = ModSounds.STEPS_1;
-        switch (rand) {
-            case 1: sound = ModSounds.STEPS_2; break;
-            case 2: sound = ModSounds.STEPS_3; break;
-            case 3: sound = ModSounds.STEPS_4; break;
-        }
-        this.playSound(sound, 0.15F, 1.0F);
+        this.playSound(ModSounds.CHASE_STEP, 0.15F, 1.0F);
     }
 
     public void setRoll(Roll roll) {

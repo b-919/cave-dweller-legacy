@@ -1,0 +1,124 @@
+# Cave Dweller Legacy - US English
+
+# Entity names
+entity.cave_dweller.name=Cave Dweller
+
+# Sound subtitles
+subtitles.cave_dweller_legacy.cave_noise=Cave noise
+subtitles.cave_dweller_legacy.chase=Cave Dweller chases
+subtitles.cave_dweller_legacy.flee=Cave Dweller flees
+subtitles.cave_dweller_legacy.hurt=Cave Dweller hurts
+subtitles.cave_dweller_legacy.death=Cave Dweller dies
+subtitles.cave_dweller_legacy.step=Cave Dweller steps
+subtitles.cave_dweller_legacy.spotted=Cave Dweller spots you
+subtitles.cave_dweller_legacy.disappear=Cave Dweller disappears
+
+# Config screen
+config.cave_dweller_legacy.title=Cave Dweller Legacy Configuration
+
+config.cave_dweller_legacy.category.spawn=Spawn
+config.cave_dweller_legacy.category.timers=Timers
+config.cave_dweller_legacy.category.behavior=Behavior
+config.cave_dweller_legacy.category.grief=Grief Mode
+config.cave_dweller_legacy.category.sound=Sound
+config.cave_dweller_legacy.category.general=General
+
+config.cave_dweller_legacy.spawn.spawn_chance_per_tick=Spawn Chance Per Tick
+config.cave_dweller_legacy.spawn.spawn_chance_per_tick.tooltip=Chance per tick to attempt spawning when the spawn timer expires (0.0 - 1.0).
+config.cave_dweller_legacy.spawn.spawn_height_limit=Spawn Height Limit
+config.cave_dweller_legacy.spawn.spawn_height_limit.tooltip=Maximum Y level at which the Cave Dweller may spawn.
+config.cave_dweller_legacy.spawn.allow_surface_spawn=Allow Surface Spawn
+config.cave_dweller_legacy.spawn.allow_surface_spawn.tooltip=Allow spawning on the surface instead of only underground.
+config.cave_dweller_legacy.spawn.max_spawned=Max Spawned
+config.cave_dweller_legacy.spawn.max_spawned.tooltip=Maximum number of Cave Dwellers alive at once.
+config.cave_dweller_legacy.spawn.spawn_distance=Spawn Distance From Player
+config.cave_dweller_legacy.spawn.spawn_distance.tooltip=Maximum distance from the player at which the Cave Dweller may spawn.
+config.cave_dweller_legacy.spawn.min_spawn_distance_from_player=Min Spawn Distance From Player
+config.cave_dweller_legacy.spawn.min_spawn_distance_from_player.tooltip=Minimum distance from the player at which the Cave Dweller may spawn.
+config.cave_dweller_legacy.spawn.dimension_whitelist=Dimension Whitelist
+config.cave_dweller_legacy.spawn.dimension_whitelist.tooltip=Dimensions where the Cave Dweller can spawn. Use 0 for the Overworld.
+config.cave_dweller_legacy.spawn.sky_light_level=Sky Light Level
+config.cave_dweller_legacy.spawn.sky_light_level.tooltip=Maximum sky light level allowed at a spawn position (0-15).
+
+config.cave_dweller_legacy.timers.time_until_spawn_min=Time Until Spawn Min (Seconds)
+config.cave_dweller_legacy.timers.time_until_spawn_min.tooltip=Minimum time before the next spawn attempt.
+config.cave_dweller_legacy.timers.time_until_spawn_max=Time Until Spawn Max (Seconds)
+config.cave_dweller_legacy.timers.time_until_spawn_max.tooltip=Maximum time before the next spawn attempt.
+config.cave_dweller_legacy.timers.cooldown_after_spawn=Cooldown After Spawn (Seconds)
+config.cave_dweller_legacy.timers.cooldown_after_spawn.tooltip=Cooldown applied after a successful spawn.
+config.cave_dweller_legacy.timers.cooldown_chance=Cooldown Chance
+config.cave_dweller_legacy.timers.cooldown_chance.tooltip=Chance that the cooldown timer activates after a spawn (0.0 - 1.0).
+config.cave_dweller_legacy.timers.time_until_leave=Time Until Leave (Seconds)
+config.cave_dweller_legacy.timers.time_until_leave.tooltip=Time before the Cave Dweller leaves on its own.
+config.cave_dweller_legacy.timers.reset_noise_min=Reset Noise Min (Seconds)
+config.cave_dweller_legacy.timers.reset_noise_min.tooltip=Minimum time between ambient cave noises.
+config.cave_dweller_legacy.timers.reset_noise_max=Reset Noise Max (Seconds)
+config.cave_dweller_legacy.timers.reset_noise_max.tooltip=Maximum time between ambient cave noises.
+
+config.cave_dweller_legacy.behavior.stare_time_min=Stare Time Min
+config.cave_dweller_legacy.behavior.stare_time_min.tooltip=Minimum number of stares required before the Cave Dweller can stop staring.
+config.cave_dweller_legacy.behavior.stare_time_max=Stare Time Max
+config.cave_dweller_legacy.behavior.stare_time_max.tooltip=Maximum number of stares required before the Cave Dweller can stop staring.
+config.cave_dweller_legacy.behavior.stare_hold_ticks=Stare Hold Ticks
+config.cave_dweller_legacy.behavior.stare_hold_ticks.tooltip=Ticks of continuous staring that count as one additional look.
+config.cave_dweller_legacy.behavior.proximity_chase_range=Proximity Chase Range
+config.cave_dweller_legacy.behavior.proximity_chase_range.tooltip=Distance in blocks at which the Cave Dweller may start a chase on its own. Set to 0 to disable.
+config.cave_dweller_legacy.behavior.proximity_chase_chance=Proximity Chase Chance
+config.cave_dweller_legacy.behavior.proximity_chase_chance.tooltip=Chance for a proximity check to start a chase when a player is in range (0.0 - 1.0).
+config.cave_dweller_legacy.behavior.chase_roll_interval_ticks=Chase Roll Interval (Ticks)
+config.cave_dweller_legacy.behavior.chase_roll_interval_ticks.tooltip=Minimum ticks between chase-entry rolls for proximity and stare checks. Lower values are faster.
+config.cave_dweller_legacy.behavior.can_climb=Can Climb
+config.cave_dweller_legacy.behavior.can_climb.tooltip=Allow the Cave Dweller to climb walls.
+config.cave_dweller_legacy.behavior.can_crawl=Can Crawl
+config.cave_dweller_legacy.behavior.can_crawl.tooltip=Allow the Cave Dweller to crawl through one-block gaps.
+config.cave_dweller_legacy.behavior.attack_damage=Attack Damage
+config.cave_dweller_legacy.behavior.attack_damage.tooltip=Damage dealt by the Cave Dweller.
+config.cave_dweller_legacy.behavior.max_health=Max Health
+config.cave_dweller_legacy.behavior.max_health.tooltip=Maximum health of the Cave Dweller.
+config.cave_dweller_legacy.behavior.movement_speed=Movement Speed
+config.cave_dweller_legacy.behavior.movement_speed.tooltip=Base movement speed of the Cave Dweller.
+config.cave_dweller_legacy.behavior.chase_speed=Chase Speed
+config.cave_dweller_legacy.behavior.chase_speed.tooltip=Movement speed multiplier used while chasing.
+config.cave_dweller_legacy.behavior.attack_reach=Attack Reach
+config.cave_dweller_legacy.behavior.attack_reach.tooltip=Attack reach distance in blocks.
+config.cave_dweller_legacy.behavior.flee_speed=Flee Speed
+config.cave_dweller_legacy.behavior.flee_speed.tooltip=Movement speed multiplier used while fleeing.
+config.cave_dweller_legacy.behavior.stroll_speed=Stroll Speed
+config.cave_dweller_legacy.behavior.stroll_speed.tooltip=Movement speed multiplier used while strolling.
+config.cave_dweller_legacy.behavior.follow_range=Follow Range
+config.cave_dweller_legacy.behavior.follow_range.tooltip=Follow range of the Cave Dweller.
+config.cave_dweller_legacy.behavior.chase_time_until_leave=Chase Time Until Leave
+config.cave_dweller_legacy.behavior.chase_time_until_leave.tooltip=Time until the Cave Dweller leaves during a chase if the player stops looking.
+
+config.cave_dweller_legacy.grief.enabled=Enabled
+config.cave_dweller_legacy.grief.enabled.tooltip=Allow the Cave Dweller to break blocks when it cannot reach a player.
+config.cave_dweller_legacy.grief.max_block_hardness=Maximum Block Hardness
+config.cave_dweller_legacy.grief.max_block_hardness.tooltip=Maximum hardness the Cave Dweller can break unless a block is whitelisted.
+config.cave_dweller_legacy.grief.block_blacklist=Block Blacklist
+config.cave_dweller_legacy.grief.block_blacklist.tooltip=Registry names that can never be broken, for example minecraft:bedrock. The blacklist takes priority.
+config.cave_dweller_legacy.grief.block_whitelist=Block Whitelist
+config.cave_dweller_legacy.grief.block_whitelist.tooltip=Registry names that may be broken regardless of the maximum hardness.
+config.cave_dweller_legacy.grief.block_break_speed=Block Break Speed
+config.cave_dweller_legacy.grief.block_break_speed.tooltip=Break speed multiplier. Higher values break blocks faster.
+config.cave_dweller_legacy.grief.drop_broken_blocks=Drop Broken Blocks
+config.cave_dweller_legacy.grief.drop_broken_blocks.tooltip=Drop block items when the Cave Dweller breaks a block.
+config.cave_dweller_legacy.grief.unreachable_delay_ticks=Unreachable Delay (Ticks)
+config.cave_dweller_legacy.grief.unreachable_delay_ticks.tooltip=How long a chase target must remain unreachable before the Cave Dweller starts breaking blocks.
+config.cave_dweller_legacy.grief.tunnel_carver_mode=Tunnel Carver Mode
+config.cave_dweller_legacy.grief.tunnel_carver_mode.tooltip=Let the Cave Dweller move toward nearby players and carve obstructing blocks outside chase mode.
+config.cave_dweller_legacy.grief.tunnel_range=Tunnel Range
+config.cave_dweller_legacy.grief.tunnel_range.tooltip=Maximum distance to a player for tunnel-carver behavior.
+config.cave_dweller_legacy.grief.tunnel_stop_distance=Tunnel Stop Distance
+config.cave_dweller_legacy.grief.tunnel_stop_distance.tooltip=Stop tunnel-carver behavior when this close to the player.
+
+config.cave_dweller_legacy.sound.cave_noise_volume=Cave Noise Volume
+config.cave_dweller_legacy.sound.cave_noise_volume.tooltip=Volume of cave noise sounds.
+config.cave_dweller_legacy.sound.cave_noise_pitch=Cave Noise Pitch
+config.cave_dweller_legacy.sound.cave_noise_pitch.tooltip=Pitch of cave noise sounds.
+config.cave_dweller_legacy.sound.play_at_player_position=Play Sounds At Player Position
+config.cave_dweller_legacy.sound.play_at_player_position.tooltip=Play ambient cave noises at the player's position.
+
+config.cave_dweller_legacy.general.debug_mode=Debug Mode
+config.cave_dweller_legacy.general.debug_mode.tooltip=Enable debug mode for additional logging.
+config.cave_dweller_legacy.general.fast_forward=Fast Forward
+config.cave_dweller_legacy.general.fast_forward.tooltip=Fast-forward timers for testing.

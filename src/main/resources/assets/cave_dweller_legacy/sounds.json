@@ -1,126 +1,69 @@
 {
-  "cavenoise_1": {
+  "cavenoise": {
     "category": "ambient",
+    "subtitle": "subtitles.cave_dweller_legacy.cave_noise",
     "sounds": [
-      "cave_dweller_legacy:cavenoise_1"
-    ]
-  },
-  "cavenoise_2": {
-    "category": "ambient",
-    "sounds": [
-      "cave_dweller_legacy:cavenoise_2"
-    ]
-  },
-  "cavenoise_3": {
-    "category": "ambient",
-    "sounds": [
-      "cave_dweller_legacy:cavenoise_3"
-    ]
-  },
-  "cavenoise_4": {
-    "category": "ambient",
-    "sounds": [
+      "cave_dweller_legacy:cavenoise_1",
+      "cave_dweller_legacy:cavenoise_2",
+      "cave_dweller_legacy:cavenoise_3",
       "cave_dweller_legacy:cavenoise_4"
     ]
   },
-  "chase_1": {
+  "chase": {
     "category": "hostile",
+    "subtitle": "subtitles.cave_dweller_legacy.chase",
     "sounds": [
-      "cave_dweller_legacy:chase_1"
-    ]
-  },
-  "chase_2": {
-    "category": "hostile",
-    "sounds": [
-      "cave_dweller_legacy:chase_2"
-    ]
-  },
-  "chase_3": {
-    "category": "hostile",
-    "sounds": [
-      "cave_dweller_legacy:chase_3"
-    ]
-  },
-  "chase_4": {
-    "category": "hostile",
-    "sounds": [
+      "cave_dweller_legacy:chase_1",
+      "cave_dweller_legacy:chase_2",
+      "cave_dweller_legacy:chase_3",
       "cave_dweller_legacy:chase_4"
     ]
   },
-  "flee_1": {
+  "chase_step": {
     "category": "hostile",
+    "subtitle": "subtitles.cave_dweller_legacy.step",
     "sounds": [
-      "cave_dweller_legacy:flee_1"
+      "cave_dweller_legacy:chase_step_1",
+      "cave_dweller_legacy:chase_step_2",
+      "cave_dweller_legacy:chase_step_3",
+      "cave_dweller_legacy:chase_step_4"
     ]
   },
-  "flee_2": {
+  "dweller_hurt": {
     "category": "hostile",
+    "subtitle": "subtitles.cave_dweller_legacy.hurt",
     "sounds": [
-      "cave_dweller_legacy:flee_2"
-    ]
-  },
-  "hurt_1": {
-    "category": "hostile",
-    "sounds": [
-      "cave_dweller_legacy:dweller_hurt_1"
-    ]
-  },
-  "hurt_2": {
-    "category": "hostile",
-    "sounds": [
-      "cave_dweller_legacy:dweller_hurt_2"
-    ]
-  },
-  "hurt_3": {
-    "category": "hostile",
-    "sounds": [
-      "cave_dweller_legacy:dweller_hurt_3"
-    ]
-  },
-  "hurt_4": {
-    "category": "hostile",
-    "sounds": [
+      "cave_dweller_legacy:dweller_hurt_1",
+      "cave_dweller_legacy:dweller_hurt_2",
+      "cave_dweller_legacy:dweller_hurt_3",
       "cave_dweller_legacy:dweller_hurt_4"
+    ]
+  },
+  "flee": {
+    "category": "hostile",
+    "subtitle": "subtitles.cave_dweller_legacy.flee",
+    "sounds": [
+      "cave_dweller_legacy:flee_1",
+      "cave_dweller_legacy:flee_2"
     ]
   },
   "death": {
     "category": "hostile",
+    "subtitle": "subtitles.cave_dweller_legacy.death",
     "sounds": [
       "cave_dweller_legacy:dweller_death"
     ]
   },
-  "steps_1": {
-    "category": "hostile",
-    "sounds": [
-      "cave_dweller_legacy:chase_steps_1"
-    ]
-  },
-  "steps_2": {
-    "category": "hostile",
-    "sounds": [
-      "cave_dweller_legacy:chase_steps_2"
-    ]
-  },
-  "steps_3": {
-    "category": "hostile",
-    "sounds": [
-      "cave_dweller_legacy:chase_steps_3"
-    ]
-  },
-  "steps_4": {
-    "category": "hostile",
-    "sounds": [
-      "cave_dweller_legacy:chase_steps_4"
-    ]
-  },
   "spotted": {
     "category": "hostile",
+    "subtitle": "subtitles.cave_dweller_legacy.spotted",
     "sounds": [
       "cave_dweller_legacy:spotted"
     ]
   },
   "disappear": {
     "category": "hostile",
+    "subtitle": "subtitles.cave_dweller_legacy.disappear",
     "sounds": [
       "cave_dweller_legacy:disappear"
     ]

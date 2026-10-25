@@ -10,11 +10,12 @@ import net.minecraft.entity.player.EntityPlayer;
 public class EntityAICaveDwellerChase extends EntityAIBase {
     private static final int ATTACK_COOLDOWN_TICKS = 20;
     private final CaveDwellerEntity entity;
+    private final DwellerPursuit pursuit;
     private int attackCooldown = 0;
-    private int pathRecalc = 0;
 
     public EntityAICaveDwellerChase(CaveDwellerEntity entity) {
         this.entity = entity;
+        this.pursuit = new DwellerPursuit(entity);
         this.setMutexBits(3);
     }
 
@@ -52,6 +53,7 @@ public class EntityAICaveDwellerChase extends EntityAIBase {
     @Override
     public void resetTask() {
         super.resetTask();
+        this.pursuit.reset();
     }
 
     @Override
@@ -62,12 +64,10 @@ public class EntityAICaveDwellerChase extends EntityAIBase {
         }
         
         entity.getLookHelper().setLookPositionWithEntity(target, 30.0F, 30.0F);
-        if (pathRecalc++ % 5 == 0) {
-            double speed = ModConfig.behavior.chaseSpeed;
-            entity.getNavigator().tryMoveToEntityLiving(target, speed);
-            if (ModConfig.general.debugMode) {
-                System.out.println("[CAVE_DWELLER_DEBUG] Chase: path recalc, speed=" + speed + " hitbox=" + entity.width + "x" + entity.height);
-            }
+        double speed = ModConfig.behavior.chaseSpeed;
+        this.pursuit.followEntity(target, speed, 5);
+        if (ModConfig.general.debugMode && entity.ticksExisted % 20 == 0) {
+            System.out.println("[CAVE_DWELLER_DEBUG] Chase: speed=" + speed + " hitbox=" + entity.width + "x" + entity.height);
         }
         double dist = entity.getDistanceSq(target);
         double reach = ModConfig.behavior.attackReach;

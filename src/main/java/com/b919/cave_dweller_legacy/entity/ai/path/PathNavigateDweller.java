@@ -64,7 +64,13 @@ public class PathNavigateDweller extends PathNavigateGround {
         DwellerPathPoint point = getDwellerPoint(index);
         double feetY = this.entity.getEntityBoundingBox().minY;
         boolean wantsToGoUp = point.y > feetY + 0.35D;
-        if (!wantsToGoUp || !point.isClimbing() && !isVerticalStep(index)) {
+        if (!wantsToGoUp) {
+            if (point.isClimbing() && Math.abs(point.y - feetY) < 0.75D) {
+                nudgeOntoLedge(index);
+            }
+            return;
+        }
+        if (!point.isClimbing() && !isVerticalStep(index)) {
             return;
         }
 
@@ -96,6 +102,21 @@ public class PathNavigateDweller extends PathNavigateGround {
         PathPoint previous = this.currentPath.getPathPointFromIndex(index - 1);
         PathPoint current = this.currentPath.getPathPointFromIndex(index);
         return previous.x == current.x && previous.z == current.z && current.y > previous.y;
+    }
+
+    private void nudgeOntoLedge(int index) {
+        if (this.currentPath == null || index + 1 >= this.currentPath.getCurrentPathLength()) {
+            return;
+        }
+        PathPoint next = this.currentPath.getPathPointFromIndex(index + 1);
+        double dx = next.x + 0.5D - this.entity.posX;
+        double dz = next.z + 0.5D - this.entity.posZ;
+        double length = Math.sqrt(dx * dx + dz * dz);
+        if (length < 0.001D) {
+            return;
+        }
+        this.dweller.motionX += dx / length * 0.04D;
+        this.dweller.motionZ += dz / length * 0.04D;
     }
 
     @Nullable
@@ -173,6 +194,18 @@ public class PathNavigateDweller extends PathNavigateGround {
 
     public boolean isClimbingUp() {
         return this.climbing;
+    }
+
+    public boolean canReachPosition(BlockPos pos) {
+        Path path = this.getPathToPos(pos);
+        if (path.getCurrentPathLength() == 0) {
+            return false;
+        }
+        PathPoint end = path.getPathPointFromIndex(path.getCurrentPathLength() - 1);
+        double dx = end.x + 0.5D - (pos.getX() + 0.5D);
+        double dy = end.y - pos.getY();
+        double dz = end.z + 0.5D - (pos.getZ() + 0.5D);
+        return dx * dx + dy * dy + dz * dz <= 2.25D;
     }
 
     public void onBlockChanged(BlockPos changedPos) {

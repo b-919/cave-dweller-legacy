@@ -20,11 +20,11 @@ public class EntityAICaveDwellerGrief extends EntityAIBase {
     private static final double REACHABLE_PATH_DISTANCE_SQ = 4.0D;
 
     private final CaveDwellerEntity entity;
+    private final DwellerPursuit pursuit;
     private EntityPlayer target;
     private UUID trackedTarget;
     private int lastPathCheckTick = -1;
     private int unreachableTicks;
-    private int lastMoveTick;
     private BlockPos breakingPos;
     private int breakingTicks;
     private int breakDuration;
@@ -32,6 +32,7 @@ public class EntityAICaveDwellerGrief extends EntityAIBase {
 
     public EntityAICaveDwellerGrief(CaveDwellerEntity entity) {
         this.entity = entity;
+        this.pursuit = new DwellerPursuit(entity);
         this.setMutexBits(3);
     }
 
@@ -89,7 +90,7 @@ public class EntityAICaveDwellerGrief extends EntityAIBase {
         this.breakingPos = null;
         this.breakingTicks = 0;
         this.breakDuration = 0;
-        this.lastMoveTick = -PATH_CHECK_INTERVAL;
+        this.pursuit.reset();
     }
 
     @Override
@@ -98,6 +99,7 @@ public class EntityAICaveDwellerGrief extends EntityAIBase {
         if (this.tunnelMode) {
             this.entity.getNavigator().clearPath();
         }
+        this.pursuit.reset();
         this.target = null;
         this.tunnelMode = false;
     }
@@ -116,9 +118,8 @@ public class EntityAICaveDwellerGrief extends EntityAIBase {
             breakBlock(digTarget);
         } else {
             clearBreakProgress();
-            if (this.tunnelMode && this.entity.ticksExisted - this.lastMoveTick >= PATH_CHECK_INTERVAL) {
-                this.lastMoveTick = this.entity.ticksExisted;
-                this.entity.getNavigator().tryMoveToEntityLiving(player, ModConfig.behavior.strollSpeed);
+            if (this.tunnelMode) {
+                this.pursuit.followEntity(player, ModConfig.behavior.strollSpeed, PATH_CHECK_INTERVAL);
             }
         }
     }

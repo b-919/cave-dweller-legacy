@@ -22,7 +22,8 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 public class DwellerPathFinder {
-    private static final int MAX_EXPANSIONS = 800;
+    private static final int BASE_EXPANSIONS = 800;
+    private static final int HARD_MAX_EXPANSIONS = 4000;
     private static final int WORLD_HEIGHT = 256;
     private static final EnumFacing[] HORIZONTAL_DIRECTIONS = {
             EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST
@@ -50,8 +51,11 @@ public class DwellerPathFinder {
         Node reached = null;
         int expanded = 0;
         double maxDistanceSquared = maxDistance * maxDistance;
+        double targetDistance = distance(start, targetPos);
+        int maxExpansions = Math.min(HARD_MAX_EXPANSIONS,
+                BASE_EXPANSIONS + (int) (targetDistance * targetDistance * 1.5D));
 
-        while (!openSet.isEmpty() && expanded < MAX_EXPANSIONS) {
+        while (!openSet.isEmpty() && expanded < maxExpansions) {
             QueueEntry entry = openSet.poll();
             Node current = entry.node;
             if (entry.score > current.score + 0.0001D || current.closed) {
