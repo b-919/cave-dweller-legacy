@@ -1,0 +1,32 @@
+name: Build mod
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build reobfuscated mod jar
+        run: ./gradlew reobfJar
+
+      - name: Upload mod jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: cave-dweller-legacy
+          path: build/libs/cave-dweller-legacy-1.0.jar
+          if-no-files-found: error
