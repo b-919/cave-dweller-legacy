@@ -26,11 +26,19 @@ public class WorldEvents {
         if (!(entity instanceof CaveDwellerEntity)) {
             return;
         }
+        if (isAdminKill(event)) {
+            return;
+        }
+
         DamageSource source = event.getSource();
         if (source == DamageSource.DROWN || source == DamageSource.OUT_OF_WORLD ||
                 source == DamageSource.IN_WALL || source == DamageSource.FALL) {
             event.setCanceled(true);
         }
+    }
+
+    private static boolean isAdminKill(LivingAttackEvent event) {
+        return event.getSource() == DamageSource.OUT_OF_WORLD && event.getAmount() >= Float.MAX_VALUE;
     }
 
     @SubscribeEvent
