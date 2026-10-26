@@ -133,7 +133,7 @@ public class EntityAICaveDwellerStare extends EntityAIBase {
         
         if (!actuallyLooking) {
             this.pursuit.followEntity(target, ModConfig.behavior.movementSpeed, 10);
-        } else {
+        } else if (!entity.isLeaping()) {
             entity.getNavigator().clearPath();
             this.pursuit.reset();
             entity.motionX = 0;

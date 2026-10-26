@@ -264,6 +264,24 @@ public class CaveDwellerEntity extends EntityCreature implements IAnimatable {
         return isClimbing() || super.isOnLadder();
     }
 
+    public boolean isLeaping() {
+        return this.getNavigator() instanceof PathNavigateDweller
+                && ((PathNavigateDweller) this.getNavigator()).isLeaping();
+    }
+
+    @Override
+    protected void jump() {
+        if (isLeaping() || isClimbDriven()) {
+            return;
+        }
+        super.jump();
+    }
+
+    private boolean isClimbDriven() {
+        return this.getNavigator() instanceof PathNavigateDweller
+                && ((PathNavigateDweller) this.getNavigator()).isClimbingUp();
+    }
+
     public void applyNavigationPosture(@Nonnull DwellerNodeType nodeType) {
         float desiredHeight = nodeType.getHeight();
         boolean crawling = nodeType == DwellerNodeType.CRAWL;

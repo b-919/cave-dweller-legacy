@@ -41,6 +41,9 @@ public class EntityAICaveDwellerGrief extends EntityAIBase {
         if (!ModConfig.grief.enabled || this.entity.world.isRemote || this.entity.isDead) {
             return false;
         }
+        if (this.entity.isLeaping()) {
+            return false;
+        }
 
         EntityPlayer player = getValidTarget();
         if (player == null) {
@@ -96,7 +99,7 @@ public class EntityAICaveDwellerGrief extends EntityAIBase {
     @Override
     public void resetTask() {
         clearBreakProgress();
-        if (this.tunnelMode) {
+        if (this.tunnelMode && !this.entity.isLeaping()) {
             this.entity.getNavigator().clearPath();
         }
         this.pursuit.reset();
@@ -106,6 +109,9 @@ public class EntityAICaveDwellerGrief extends EntityAIBase {
 
     @Override
     public void updateTask() {
+        if (this.entity.isLeaping()) {
+            return;
+        }
         EntityPlayer player = getValidTarget();
         if (player == null) {
             return;

@@ -1,6 +1,7 @@
 package com.b919.cave_dweller_legacy.common.config;
 
 import com.b919.cave_dweller_legacy.CDLMain;
+import com.b919.cave_dweller_legacy.util.DwellerLiquid;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -21,6 +22,14 @@ public class ModConfig {
     @Config.LangKey("config.cave_dweller_legacy.category.behavior")
     @Config.Name("Behavior")
     public static Behavior behavior = new Behavior();
+
+    @Config.LangKey("config.cave_dweller_legacy.category.swimming")
+    @Config.Name("Swimming")
+    public static Swimming swimming = new Swimming();
+
+    @Config.LangKey("config.cave_dweller_legacy.category.leaping")
+    @Config.Name("Leaping")
+    public static Leaping leaping = new Leaping();
 
     @Config.LangKey("config.cave_dweller_legacy.category.grief")
     @Config.Name("Grief Mode")
@@ -204,7 +213,7 @@ public class ModConfig {
         @Config.Name("Chase Speed")
         @Config.Comment("Movement speed multiplier during chase")
         @Config.RangeDouble(min = 0.1D, max = 1.5D)
-        public double chaseSpeed = 0.90D;
+        public double chaseSpeed = 0.87D;
 
         @Config.LangKey("config.cave_dweller_legacy.behavior.attack_reach")
         @Config.Name("Attack Reach")
@@ -240,6 +249,152 @@ public class ModConfig {
         @Config.Comment("Time until Cave Dweller leaves during chase if player stops looking")
         @Config.RangeInt(min = 10, max = 120)
         public int chaseTimeUntilLeave = 30;
+    }
+
+    public static class Swimming {
+        @Config.LangKey("config.cave_dweller_legacy.swimming.can_swim")
+        @Config.Name("Can Swim")
+        @Config.Comment("Allow the Cave Dweller to float and swim in water, lava, and listed modded liquids")
+        public boolean canSwim = true;
+
+        @Config.LangKey("config.cave_dweller_legacy.swimming.water_up_speed")
+        @Config.Name("Water Up Speed")
+        @Config.Comment("Maximum upward swim speed in water, in blocks per tick")
+        @Config.RangeDouble(min = 0.0D, max = 0.2D)
+        public double waterUpSpeed = 0.06D;
+
+        @Config.LangKey("config.cave_dweller_legacy.swimming.water_down_speed")
+        @Config.Name("Water Down Speed")
+        @Config.Comment("Maximum downward swim speed in water, in blocks per tick")
+        @Config.RangeDouble(min = 0.0D, max = 0.2D)
+        public double waterDownSpeed = 0.05D;
+
+        @Config.LangKey("config.cave_dweller_legacy.swimming.lava_up_speed")
+        @Config.Name("Lava Up Speed")
+        @Config.Comment("Maximum upward swim speed in lava, in blocks per tick")
+        @Config.RangeDouble(min = 0.0D, max = 0.2D)
+        public double lavaUpSpeed = 0.05D;
+
+        @Config.LangKey("config.cave_dweller_legacy.swimming.lava_down_speed")
+        @Config.Name("Lava Down Speed")
+        @Config.Comment("Maximum downward swim speed in lava, in blocks per tick")
+        @Config.RangeDouble(min = 0.0D, max = 0.2D)
+        public double lavaDownSpeed = 0.04D;
+
+        @Config.LangKey("config.cave_dweller_legacy.swimming.vertical_response")
+        @Config.Name("Vertical Response")
+        @Config.Comment("How strongly vertical speed reacts to the height difference from the target")
+        @Config.RangeDouble(min = 0.05D, max = 1.0D)
+        public double verticalResponse = 0.22D;
+
+        @Config.LangKey("config.cave_dweller_legacy.swimming.vertical_dead_zone")
+        @Config.Name("Vertical Dead Zone")
+        @Config.Comment("Height difference treated as on-target, preventing surface bobbing")
+        @Config.RangeDouble(min = 0.0D, max = 1.0D)
+        public double verticalDeadZone = 0.1D;
+
+        @Config.LangKey("config.cave_dweller_legacy.swimming.max_ledge_boost")
+        @Config.Name("Max Ledge Boost")
+        @Config.Comment("Maximum upward boost preserved from vanilla when pressing against a liquid bank")
+        @Config.RangeDouble(min = 0.0D, max = 0.6D)
+        public double maxLedgeBoost = 0.3D;
+
+        @Config.LangKey("config.cave_dweller_legacy.swimming.minimum_swim_depth")
+        @Config.Name("Minimum Swim Depth")
+        @Config.Comment("Liquid depth required to start swimming while standing on the bottom")
+        @Config.RangeInt(min = 1, max = 16)
+        public int minimumSwimDepth = 3;
+
+        @Config.LangKey("config.cave_dweller_legacy.swimming.water_surface_cost")
+        @Config.Name("Water Surface Cost")
+        @Config.Comment("Pathfinding cost of water nodes whose head is above the surface")
+        @Config.RangeDouble(min = 0.0D, max = 64.0D)
+        public double waterSurfaceCost = 4.0D;
+
+        @Config.LangKey("config.cave_dweller_legacy.swimming.water_submerged_cost")
+        @Config.Name("Water Submerged Cost")
+        @Config.Comment("Pathfinding cost of water nodes whose head is submerged")
+        @Config.RangeDouble(min = 0.0D, max = 64.0D)
+        public double waterSubmergedCost = 8.0D;
+
+        @Config.LangKey("config.cave_dweller_legacy.swimming.modded_liquids")
+        @Config.Name("Modded Liquids")
+        @Config.Comment("Fluid names the Cave Dweller can swim in, for example crude_oil or thermalfoundation:crude_oil. " +
+                "Add optional overrides with =upSpeed,downSpeed,surfaceCost,submergedCost after the name")
+        public String[] moddedLiquids = new String[0];
+
+        @Config.LangKey("config.cave_dweller_legacy.swimming.modded_liquid_up_speed")
+        @Config.Name("Modded Liquid Up Speed")
+        @Config.Comment("Default maximum upward swim speed in listed modded liquids, in blocks per tick")
+        @Config.RangeDouble(min = 0.0D, max = 0.2D)
+        public double moddedLiquidUpSpeed = 0.06D;
+
+        @Config.LangKey("config.cave_dweller_legacy.swimming.modded_liquid_down_speed")
+        @Config.Name("Modded Liquid Down Speed")
+        @Config.Comment("Default maximum downward swim speed in listed modded liquids, in blocks per tick")
+        @Config.RangeDouble(min = 0.0D, max = 0.2D)
+        public double moddedLiquidDownSpeed = 0.05D;
+
+        @Config.LangKey("config.cave_dweller_legacy.swimming.modded_liquid_surface_cost")
+        @Config.Name("Modded Liquid Surface Cost")
+        @Config.Comment("Default pathfinding cost of listed modded liquid nodes whose head is above the surface")
+        @Config.RangeDouble(min = 0.0D, max = 64.0D)
+        public double moddedLiquidSurfaceCost = 4.0D;
+
+        @Config.LangKey("config.cave_dweller_legacy.swimming.modded_liquid_submerged_cost")
+        @Config.Name("Modded Liquid Submerged Cost")
+        @Config.Comment("Default pathfinding cost of listed modded liquid nodes whose head is submerged")
+        @Config.RangeDouble(min = 0.0D, max = 64.0D)
+        public double moddedLiquidSubmergedCost = 8.0D;
+    }
+
+    public static class Leaping {
+        @Config.LangKey("config.cave_dweller_legacy.leaping.enabled")
+        @Config.Name("Enabled")
+        @Config.Comment("Allow the Cave Dweller to leap across gaps, bridges, and parkour routes")
+        public boolean enabled = true;
+
+        @Config.LangKey("config.cave_dweller_legacy.leaping.max_leap_distance")
+        @Config.Name("Max Leap Distance")
+        @Config.Comment("Maximum center-to-center leap distance in blocks. 4.0 crosses a 3-block air gap")
+        @Config.RangeDouble(min = 1.0D, max = 64.0D)
+        public double maxLeapDistance = 4.0D;
+
+        @Config.LangKey("config.cave_dweller_legacy.leaping.max_leap_rise")
+        @Config.Name("Max Leap Rise")
+        @Config.Comment("Maximum blocks a leap may climb to reach a higher ledge")
+        @Config.RangeInt(min = 0, max = 16)
+        public int maxLeapRise = 2;
+
+        @Config.LangKey("config.cave_dweller_legacy.leaping.max_leap_drop")
+        @Config.Name("Max Leap Drop")
+        @Config.Comment("Maximum blocks a leap may descend to reach a lower ledge")
+        @Config.RangeInt(min = 0, max = 32)
+        public int maxLeapDrop = 4;
+
+        @Config.LangKey("config.cave_dweller_legacy.leaping.leap_speed")
+        @Config.Name("Leap Speed")
+        @Config.Comment("Target horizontal speed of a leap in blocks per tick. Leaps are spread over whole ticks; long leaps use a higher speed")
+        @Config.RangeDouble(min = 0.1D, max = 4.0D)
+        public double leapSpeed = 0.5D;
+
+        @Config.LangKey("config.cave_dweller_legacy.leaping.max_leap_ticks")
+        @Config.Name("Max Leap Ticks")
+        @Config.Comment("Maximum ticks spent airborne during one leap")
+        @Config.RangeInt(min = 5, max = 200)
+        public int maxLeapTicks = 40;
+
+        @Config.LangKey("config.cave_dweller_legacy.leaping.leap_path_cost")
+        @Config.Name("Leap Path Cost")
+        @Config.Comment("Extra pathfinding cost added to a leap, so normal walking is preferred when possible")
+        @Config.RangeDouble(min = 0.0D, max = 64.0D)
+        public double leapPathCost = 4.0D;
+
+        @Config.LangKey("config.cave_dweller_legacy.leaping.leap_cooldown")
+        @Config.Name("Leap Cooldown")
+        @Config.Comment("Ticks the Cave Dweller waits after landing before it may leap again")
+        @Config.RangeInt(min = 0, max = 100)
+        public int leapCooldown = 3;
     }
 
     public static class Grief {
@@ -336,6 +491,7 @@ public class ModConfig {
         public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
             if (event.getModID().equals(CDLMain.MODID)) {
                 ConfigManager.sync(CDLMain.MODID, Config.Type.INSTANCE);
+                DwellerLiquid.invalidate();
             }
         }
     }

@@ -32,6 +32,11 @@ public class DwellerPursuit {
     }
 
     private boolean follow(Entity target, Vec3d position, double speed, int repathInterval) {
+        if (this.entity.isLeaping()) {
+            this.lastStuckCheckPos = new Vec3d(this.entity.posX, this.entity.posY, this.entity.posZ);
+            return !this.entity.getNavigator().noPath();
+        }
+
         int interval = Math.max(1, repathInterval);
         boolean repathNow = false;
 
